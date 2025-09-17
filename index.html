@@ -1,169 +1,192 @@
 <!DOCTYPE html>
-<html lang="pr-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Street Store | e-comerce</title>
-    <link rel="stylesheet" href="styles/globals.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loja Afiliados – TechDeals</title>
+  <meta name="description" content="Achados com links de afiliado – Mercado Livre, Shopee e mais." />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="navbar show-menu">    
-        <div class="header-inner-content">
-            <h1 class="logo" >STREET<span>STORE</span></h1>
-            <nav>
-                 <ul>
-                    <li>Home</li>
-                    <li>Produtos</li>
-                    <li>Contato</li>
-                </ul>
-            </nav>
-            <div class="nav-icon-container">
-              <img src="images/cart.png"/>
-              <img src="images/menu.png" class="menu-buttom"/>  
-            </div>
-        </div>
+  <header>
+    <div class="container nav">
+      <div class="brand"><span class="dot"></span><span>Technolojia</span></div>
+      <div class="search">
+        <input id="search" type="search" placeholder="Buscar por produto, marca ou categoria…" aria-label="Buscar produtos" />
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="#7b7f87" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="7" stroke="#7b7f87" stroke-width="2"/></svg>
+      </div>
+      <div class="badges">
+        <span class="chip">Links patrocinados</span>
+        <span class="chip">Mercado Livre</span>
+        <span class="chip">Shopee</span>
+      </div>
     </div>
+  </header>
 
-    <header>
-        <div class="header-inner-content">
-            <div class="header-bottom-side">
-                <div class="header-bottom-side-left">
-                    <h2>Novo estilo ao seu dia-a-dia</h2>
-                    <p> Sucesso profissional é um conceito subjetivo que varia de pessoa para pessoa, mas geralmente é definido como a realização de metas e objetivos na carreira, com satisfação e reconhecimento!
-                    </p>
-                    <button>Saiba mais &#8594;</button>
-                </div>
-                <div class="header-bottom-side-right">
-                    <img src="images/gaming-msi-header.png" alt=""/>
-                </div>
-            </div>
+  <main class="container" id="app"></main>
+
+  <footer>
+    <div class="container">
+      <p class="disclaimer">Como afiliado, posso ganhar comissão por compras qualificadas. Os preços e estoques podem mudar sem aviso.</p>
+      <p id="last-update" class="last-updated"></p>
+    </div>
+  </footer>
+
+  <script>
+    // ====== CONFIG ======
+    const DEFAULT_UTM = "?utm_source=techdeals&utm_medium=site&utm_campaign=afiliados"; 
+    const REL = "nofollow sponsored noopener";
+
+    // >>>>>>> TROQUE PELA URL RAW DO SEU REPOSITÓRIO <<<<<<<
+    const PRICE_JSON_URL = "https://raw.githubusercontent.com/Eduardohmn/raspador/main/data/latest_prices.json";
+
+    // ====== CATÁLOGO ======
+    const CATALOG = [
+      {
+        id:"carregadores",
+        title:"Carregador",
+        items:[
+          {
+            name:"Cabo USB-C + Fonte 25W",
+            img:"https://http2.mlstatic.com/D_NQ_NP_2X_865580-MLA85249126926_062025-F.webp",
+            features:["tipo C","fast charge 25W","cabo blindado"],
+            price:"R$ 59,90",
+            store:{name:"Mercado Livre", icon:"https://upload.wikimedia.org/wikipedia/commons/5/5f/MercadoLibre.svg"},
+            url:"https://mercadolivre.com/sec/1tNhNAF"
+          },
+          {
+            name:"Cabo iPhone (C/8 pinos) 1m",
+            img:"https://http2.mlstatic.com/D_NQ_NP_2X_915914-MLA89587309345_082025-F.webp",
+            features:["Cabo iPhone","C / 8 pin","1 metro"],
+            price:"R$ 19,90",
+            store:{name:"Shopee", icon:"https://upload.wikimedia.org/wikipedia/commons/3/39/Shopee_logo.svg"},
+            url:"https://mercadolivre.com/sec/1BBBZxJ"
+          }
+        ]
+      },
+      {
+        id:"fone",
+        title:"Fone sem fio",
+        items:[
+          {
+            name:"TWS BT 5.3 – Estojo compacto",
+            img:"https://images.unsplash.com/photo-1606229365485-a1fb2b7f16a2?q=80&w=900&auto=format&fit=crop",
+            features:["grave reforçado","resistência IPX4","até 20h de uso"],
+            price:"R$ 89,90",
+            store:{name:"Mercado Livre", icon:"https://upload.wikimedia.org/wikipedia/commons/5/5f/MercadoLibre.svg"},
+            url:"https://www.mercadolivre.com.br/"
+          }
+        ]
+      }
+    ];
+
+    // ====== RENDER ======
+    const app = document.getElementById('app');
+
+    function sectionTemplate(section){
+      const sec = document.createElement('section');
+      sec.dataset.sectionId = section.id;
+      sec.innerHTML = `
+        <div class="section-head">
+          <h2>${section.title}</h2>
+          <a class="more" href="categoria.html?sec=${section.id}" aria-label="Ver mais ${section.title}">Ver mais</a>
         </div>
-    </header>
+        <div class="rail"></div>
+      `;
+      const rail = sec.querySelector('.rail');
+      section.items.forEach(item => rail.appendChild(cardTemplate(item)));
+      return sec;
+    }
 
-    <!-- Main Content -->
-     <main>
-        <div class="gray-background">
-            <div class="page-inner-content">
-                <div class="cols cols-3">  <!-- Adicione o traço -->
-                    <img src="images/products/product-1.png" alt="" />
-                    <img src="images/products/product-2.png" alt="" />
-                    <img src="images/products/product-3.png" alt="" />
-                </div>
-            </div>    
+    function cardTemplate(item){
+      const a = document.createElement('a');
+      a.className = 'card';
+      a.href = item.url + DEFAULT_UTM;
+      a.rel = REL;
+      a.target = '_blank';
+      a.innerHTML = `
+        <div class="media"><img loading="lazy" alt="${item.name}" src="${item.img}" /></div>
+        <div class="content">
+          <div class="title">${item.name}</div>
+          <ul class="features">${item.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+          <div class="price-row">
+            <span class="price">${item.price}</span>
+            <span class="store"><img alt="${item.store.name}" src="${item.store.icon}">${item.store.name}</span>
+          </div>
         </div>
+      `;
+      return a;
+    }
 
-        <div>
-            <div class="page-inner-content">
-                <h3 class="section-title">Produtos Selecionados</h3>
-                <div class="subtitle-underline"></div>
-                <div class="cols cols-4">
-                    <div class="product">
-                        <img src="images/products/product-4.png" alt="" />
-                        <p class="product-name">Combo Gamer</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-5.png" alt="" />
-                        <p class="product-name">Placa de Vídeo</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-6.png" alt="" />
-                        <p class="product-name">Controle Gamer</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-7.png" alt="" />
-                        <p class="product-name">Cadeira Gamer</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                </div>
-            </div>
-             <div>
-            <div class="page-inner-content">
-                <h3 class="section-title">Produtos em Destaque</h3>
-                <div class="subtitle-underline"></div>
-                <div class="cols cols-4">
-                    <div class="product">
-                        <img src="images/products/product-8.png" alt="" />
-                        <p class="product-name">Celular 01</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-8.png" alt="" />
-                        <p class="product-name">Celular 02</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-9.png" alt="" />
-                        <p class="product-name">Celular 04/p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-10.png" alt="" />
-                        <p class="product-name">Suporte Carregador de Celular</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-11.png" alt="" />
-                        <p class="product-name">Celular 05</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-12.png" alt="" />
-                        <p class="product-name">Game</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-13.png" alt="" />
-                        <p class="product-name">Simulador Gamer</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                    <div class="product">
-                        <img src="images/products/product-14.png" alt="" />
-                        <p class="product-name">Console Gamer</p>
-                        <p class="rate">&#9733;&#9733;&#9733;&#9733;&#9734;</p>
-                        <p class="product-price">4,000.00 <span>M2</span></p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    function render(){
+      app.innerHTML = '';
+      CATALOG.forEach(sec => app.appendChild(sectionTemplate(sec)));
+    }
 
-        <div class="gray-background">
-           <div class="header-inner-content">
-            <div class="header-bottom-side exclusive-container">
-                <div class="header-bottom-side-left">
-                    <h2>Smart Band 4</h2>
-                    <p> O Mi Smart Band 4 tem uma tela AMOLED 39.9% maior que o Mi Band 3, tela completamente digital com brilho ajustável, de tal modo que tudo é claro ao máximo.
-                    </p>
-                    <button>Saiba mais &#8594;</button>
-                </div>
-                <div class="header-bottom-side-right">
-                    <img src="images/exclusive.png" alt=""/>
-                </div>
-            </div>
-        </div> 
-     </main>
+    render();
 
-    <script>
-    const navbar = document.querySelector(".navbar");
-    const menuButton = document.querySelector(".menu-button");  <!-- Corrigido o nome da variável -->
+    // ====== PREÇOS DINÂMICOS (GitHub Actions -> JSON) ======
+    async function carregarPrecosJSON(url){
+      try{
+        const res = await fetch(url + `?v=${Date.now()}`, {cache:'no-store'});
+        if(!res.ok) throw new Error('Falha ao baixar JSON de preços');
+        const data = await res.json(); // [{id, price, url, ts_utc, error}, ...]
+        const mapa = new Map();
+        let lastTs = null;
 
-    menuButton.addEventListener("click", () => {
-        navbar.classList.toggle("show-menu");  <!-- Corrigido classList -->
+        for(const row of data){
+          if(row && row.id){
+            mapa.set(row.id, (row.price||'').toString().trim());
+            if(row.ts_utc){
+              const d = new Date(row.ts_utc);
+              if(!isNaN(d)) lastTs = !lastTs || d>lastTs ? d : lastTs;
+            }
+          }
+        }
+
+        // Atualiza cards
+        document.querySelectorAll('section').forEach(sec=>{
+          const secId = sec.dataset.sectionId || '';
+          sec.querySelectorAll('.card').forEach(card=>{
+            const titulo = card.querySelector('.title')?.textContent?.trim() || '';
+            const key = `${secId}:${titulo}`;
+            const novo = mapa.get(key);
+            if(novo){
+              const span = card.querySelector('.price');
+              if(span) span.textContent = novo.startsWith('R$') ? novo : `R$ ${novo}`;
+            }
+          });
+        });
+
+        // Mostra "Atualizado em"
+        if(lastTs){
+          const el = document.getElementById('last-update');
+          const fmt = lastTs.toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'});
+          if(el) el.textContent = `Atualizado em ${fmt}`;
+        }
+      }catch(err){
+        console.warn('[precos] erro ao carregar JSON:', err);
+      }
+    }
+
+    carregarPrecosJSON(PRICE_JSON_URL);
+
+    // ====== BUSCA ======
+    const input = document.getElementById('search');
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      for (const sec of app.querySelectorAll('section')){
+        let visible = 0;
+        for (const card of sec.querySelectorAll('.card')){
+          const txt = card.querySelector('.title').textContent.toLowerCase();
+          const feats = card.querySelector('.features').textContent.toLowerCase();
+          const show = txt.includes(q) || feats.includes(q);
+          card.style.display = show ? '' : 'none';
+          if (show) visible++;
+        }
+        sec.style.display = visible ? '' : 'none';
+      }
     });
-</script>
+  </script>
 </body>
 </html>
-

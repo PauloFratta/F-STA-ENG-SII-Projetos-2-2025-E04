@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Technolojia – Ver mais</title>
+<meta name="description" content="Lista completa de produtos da categoria selecionada." />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header>
+  <div class="container nav">
+    <a class="brand" href="index.html"><span class="dot"></span><span>Technolojia</span></a>
+  </div>
+</header>
+
+<main class="container">
+  <nav class="breadcrumbs" id="bc"></nav>
+
+  <div class="titlebar">
+    <h1 id="title">Categoria</h1>
+    <div class="toolbar">
+      <input id="q" class="input" type="search" placeholder="Buscar nesta categoria…" aria-label="Buscar" />
+      <select id="store" class="select" aria-label="Filtrar por loja">
+        <option value="">Todas as lojas</option>
+        <option>Mercado Livre</option>
+        <option>Shopee</option>
+        <option>Amazon</option>
+        <option>AliExpress</option>
+      </select>
+      <select id="sort" class="select" aria-label="Ordenar">
+        <option value="">Ordenar</option>
+        <option value="price_asc">Preço: menor → maior</option>
+        <option value="price_desc">Preço: maior → menor</option>
+        <option value="name_asc">Nome: A → Z</option>
+        <option value="name_desc">Nome: Z → A</option>
+      </select>
+      <span id="count" class="chip">0 itens</span>
+    </div>
+  </div>
+
+  <section id="grid" class="grid"></section>
+  <div id="empty" class="empty" style="display:none">Nada encontrado com os filtros atuais.</div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>Como afiliado, posso ganhar comissão por compras qualificadas. Preços/estoques podem mudar sem aviso.</p>
+  </div>
+</footer>
+
+<script>
+  // ====== Mesmo modelo de dados do seu site (copie/cole/expanda) ======
+  const DEFAULT_UTM = "?utm_source=techdeals&utm_medium=site&utm_campaign=afiliados";
+  const REL = "nofollow sponsored noopener";
+
+  const CATALOG = [
+    {
+      id:"carregadores",
+      title:"Carregador",
+      items:[
+        {
+          name:"Cabo USB-C + Fonte 25W",
+          img:"https://http2.mlstatic.com/D_NQ_NP_2X_865580-MLA85249126926_062025-F.webp",
+          features:["tipo C","fast charge 25W","cabo blindado"],
+          price:"R$ 59,90",
+          store:{name:"Mercado Livre"},
+          url:"https://mercadolivre.com/sec/1tNhNAF"
+        },
+        {
+          name:"Cabo iPhone (C/8 pinos) 1m",
+          img:"https://http2.mlstatic.com/D_NQ_NP_2X_915914-MLA89587309345_082025-F.webp",
+          features:["Cabo iPhone","C / 8 pin","1 metro"],
+          price:"R$ 19,90",
+          store:{name:"Shopee"},
+          url:"https://mercadolivre.com/sec/1BBBZxJ"
+        }
+      ]
+    },
+    {
+      id:"fone",
+      title:"Fone sem fio",
+      items:[
+        {
+          name:"TWS BT 5.3 – Estojo compacto",
+          img:"https://images.unsplash.com/photo-1606229365485-a1fb2b7f16a2?q=80&w=900&auto=format&fit=crop",
+          features:["grave reforçado","resistência IPX4","até 20h de uso"],
+          price:"R$ 89,90",
+          store:{name:"Mercado Livre"},
+          url:"https://www.mercadolivre.com.br/"
+        }
+      ]
+    }
+  ];
+
+  // ====== Helpers ======
+  const $ = sel => document.querySelector(sel);
+  const params = new URLSearchParams(location.search);
+  const sectionId = params.get("sec") || "";
+  const section = CATALOG.find(s => s.id === sectionId);
+
+  function brlToNumber(s){
+    // "R$ 1.234,56" -> 1234.56
+    if(!s) return NaN;
+    return Number(String(s).replace(/[^\d,]/g,"").replace(/\./g,"").replace(",","."));
+  }
+
+  function renderBreadcrumbs(){
+    const bc = $("#bc");
+    const path = `
+      <a href="index.html">Início</a> &nbsp;/&nbsp;
+      <span>${section ? section.title : "Categoria"}</span>
+    `;
+    bc.innerHTML = path;
+  }
+
+  function card(item){
+    const a = document.createElement("a");
+    a.className = "card";
+    a.href = item.url + DEFAULT_UTM;
+    a.target = "_blank";
+    a.rel = REL;
+    a.innerHTML = `
+      <div class="media"><img loading="lazy" alt="${item.name}" src="${item.img}"></div>
+      <div class="content">
+        <div class="name">${item.name}</div>
+        <ul class="features">${(item.features||[]).map(f=>`<li>${f}</li>`).join("")}</ul>
+        <div class="row">
+          <span class="price">${item.price || "—"}</span>
+          <span class="store">${item.store?.name || "Loja"}</span>
+        </div>
+      </div>
+    `;
+    return a;
+  }
+
+  function renderGrid(list){
+    const grid = $("#grid");
+    grid.innerHTML = "";
+    list.forEach(it => grid.appendChild(card(it)));
+    $("#count").textContent = `${list.length} ${list.length===1?"item":"itens"}`;
+    $("#empty").style.display = list.length ? "none" : "";
+  }
+
+  function applyFilters(){
+    const q = $("#q").value.toLowerCase().trim();
+    const store = $("#store").value;
+    const sort = $("#sort").value;
+
+    let list = [...(section?.items || [])];
+
+    // filtro busca
+    if(q){
+      list = list.filter(it => {
+        const text = (it.name + " " + (it.features||[]).join(" ")).toLowerCase();
+        return text.includes(q);
+      });
+    }
+    // filtro loja
+    if(store){
+      list = list.filter(it => (it.store?.name||"").toLowerCase() === store.toLowerCase());
+    }
+    // ordenação
+    if(sort === "price_asc"){
+      list.sort((a,b)=> brlToNumber(a.price) - brlToNumber(b.price));
+    } else if(sort === "price_desc"){
+      list.sort((a,b)=> brlToNumber(b.price) - brlToNumber(a.price));
+    } else if(sort === "name_asc"){
+      list.sort((a,b)=> a.name.localeCompare(b.name, "pt-BR"));
+    } else if(sort === "name_desc"){
+      list.sort((a,b)=> b.name.localeCompare(a.name, "pt-BR"));
+    }
+
+    renderGrid(list);
+  }
+
+  // ====== Boot ======
+  (function init(){
+    if(!section){
+      $("#title").textContent = "Categoria não encontrada";
+      renderBreadcrumbs();
+      $("#grid").innerHTML = "";
+      $("#empty").style.display = "";
+      return;
+    }
+    $("#title").textContent = section.title;
+    renderBreadcrumbs();
+    renderGrid(section.items);
+
+    // eventos
+    $("#q").addEventListener("input", applyFilters);
+    $("#store").addEventListener("change", applyFilters);
+    $("#sort").addEventListener("change", applyFilters);
+  })();
+</script>
+</body>
+</html>
